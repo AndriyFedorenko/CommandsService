@@ -1,3 +1,3 @@
 _deps
-cmake-build-debug/**
-.idea/**
+CommandsService/cmake-build-debug/**
+CommandsService/.idea/**
