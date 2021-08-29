@@ -3,15 +3,23 @@
 //
 
 #include <thread>
+
 #include <event.h>
 #include <event2/thread.h>
+#include <glog/logging.h>
 
 #include "TcpServer.h"
+#include "ClientException.h"
+#include "Utils.h"
 
 using namespace std;
 
 
-TcpServer::TcpServer(const std::string& address, const int port) :
+TcpServer::TcpServer(
+        IDataProcessor::Ptr dataProcessor,
+        const std::string& address,
+        const int port) :
+        _dataProcessor(dataProcessor),
         _address(address),
         _port(port)
 {
@@ -31,8 +39,8 @@ void TcpServer::run()
 {
     connect(DEFAULT_CONNECTION_MAX_NUM);
 
-    _serverConnection.base = makeEventBase();
-    _serverConnection.acceptEvent = makeEvent(_serverConnection.base, _serverConnection.fileDescriptor,
+    _serverConnection.base = Utils::makeEventBase();
+    _serverConnection.acceptEvent = Utils::makeEvent(_serverConnection.base, _serverConnection.fileDescriptor,
                                               &_serverConnection, onAccept, EV_READ | EV_PERSIST);
 
     if(event_add(_serverConnection.acceptEvent.get(), NULL) < 0)
@@ -40,39 +48,11 @@ void TcpServer::run()
 
     evthread_use_pthreads();
 
-    processCommands();
+    _dataProcessor->process();
 
     if(event_base_dispatch(_serverConnection.base.get()) < 0)
         throw runtime_error("event_base_dispatch() failed");
 }
-
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "EndlessLoop"
-void TcpServer::processCommands() const {
-    thread my_t([&]()
-    {
-        while(true)
-        {
-            PackagesQueue *pq = PackagesQueue::getInstance();
-
-            ClientPackage *clientPackage = pq->popReceivedCommand();
-
-            if(clientPackage != nullptr)
-            {
-                // TODO process command
-
-                pq->pushReadyCommand(clientPackage);
-
-                if (event_add(clientPackage->writeEvent.get(), NULL) < 0)
-                    cout << "event_add(peer->write_event, ...) failed" << endl;
-            }
-        }
-    });
-
-    if(my_t.joinable())
-        my_t.detach();
-}
-#pragma clang diagnostic pop
 
 void TcpServer::connect(const int connectionNum)
 {
@@ -96,139 +76,116 @@ void TcpServer::connect(const int connectionNum)
         throw runtime_error("listen() failed");
 }
 
-EventBasePtr TcpServer::makeEventBase()
-{
-    EventBasePtr base(event_base_new(), event_base_free);
-
-    if(base == nullptr)
-        throw runtime_error("event_base_new() failed");
-
-    return base;
-}
-
-EventPtr TcpServer::makeEvent(EventBasePtr base,
-                                         evutil_socket_t fileDescriptor,
-                                         void *callbackArg,
-                                         event_callback_fn eventFunc,
-                                         short events)
-{
-    EventPtr newEvent (event_new(base.get(), fileDescriptor,
-                                                events, eventFunc, callbackArg), [] (event* e) {
-        if(e != nullptr)
-        {
-            event_del(e);
-            event_free(e);
-        }
-    });
-
-    if(newEvent == nullptr)
-        throw runtime_error("event_new() failed");
-
-    return newEvent;
-}
-
 void TcpServer::onAccept(evutil_socket_t listen_sock, short flags, void* arg)
 {
-    if(arg == nullptr)
-    {
-        cout << "arg is null" <<endl;
-        return;
-    }
-
     try
     {
+        if(arg == nullptr)
+            throw runtime_error( "arg is null");
+
         ServerConnection *serverConn = (ServerConnection *) arg;
         evutil_socket_t fileDescriptor = accept(listen_sock, 0, 0);
 
         if (fileDescriptor < 0)
             throw runtime_error("accept() failed");
 
-        if (evutil_make_socket_nonblocking(fileDescriptor) < 0)
-            throw runtime_error("evutil_make_socket_nonblocking() failed");
+        ClientPackage* newClientPackage = new ClientPackage(fileDescriptor, serverConn->base);
 
-        ClientPackage* newClientPackage = new ClientPackage();
-        newClientPackage->base = serverConn->base;
-        newClientPackage->fileDescriptor = fileDescriptor;
-        newClientPackage->readEvent = makeEvent(newClientPackage->base, newClientPackage->fileDescriptor,newClientPackage, onRead, EV_READ | EV_PERSIST);
-        newClientPackage->writeEvent = makeEvent(newClientPackage->base, newClientPackage->fileDescriptor,
-                                                 newClientPackage, onWrite, EV_WRITE | EV_PERSIST);
+        newClientPackage->setReadEven(Utils::makeEvent(newClientPackage->getBase(), fileDescriptor,
+                                                       newClientPackage, onRead, EV_READ | EV_PERSIST));
+        newClientPackage->setWriteEven(Utils::makeEvent(newClientPackage->getBase(), fileDescriptor,
+                                                        newClientPackage, onWrite, EV_WRITE | EV_PERSIST));
 
-        if (event_add(newClientPackage->readEvent.get(), NULL) < 0)
-            throw runtime_error( "event_add(read_event, ...) failed");
+        newClientPackage->activateReadEvent();
     }
     catch(const exception& ex)
     {
-        cout << __func__ << " : " << ex.what() << endl; // TODO add logger
+        LOG(ERROR) << __func__ << " : " << ex.what();
     }
 }
 
 void TcpServer::onRead(evutil_socket_t fileDescriptor, short flags, void* arg)
 {
-    if(arg == nullptr)
-    {
-        cout << "arg is null" <<endl;
-        return;
-    }
+    ClientPackage* clientPackage = nullptr;
 
-    ClientPackage* clientPackage = (ClientPackage*)arg;
-
-    ssize_t bytes = 0;
-    uint8_t buff[READ_BUFF_SIZE] = { 0 };
-    while(true)
+    try
     {
-        bytes = read(fileDescriptor, buff, READ_BUFF_SIZE);
-        if(bytes == 0)
+        if(arg == nullptr)
+            throw runtime_error("arg is null");
+
+        clientPackage = (ClientPackage*)arg;
+
+        ssize_t bytes = 0;
+        uint8_t buff[READ_BUFF_SIZE] = { 0 };
+        while(true)
         {
-            cout << "client disconnected!" << endl;
-            delete clientPackage;
-            return;
+            bytes = read(fileDescriptor, buff, READ_BUFF_SIZE);
+            if(bytes == 0)
+                throw ClientException("client disconnected!");
+
+            if(bytes < 0)
+            {
+                if(errno == EINTR)
+                    continue;
+
+                throw ClientException(" read() failed, errno = " +to_string(errno));
+            }
+
+            break;
         }
 
-        if(bytes < 0)
-        {
-            if(errno == EINTR)
-                continue;
+        clientPackage->setRequest(reinterpret_cast<char *>(buff));
 
-            cout << " read() failed, errno = " <<  errno << endl;
-            delete clientPackage;
-            return;
-        }
+        LOG(INFO) << "Read: " << clientPackage->getRequest();
 
-        break;
+        PackagesQueue::getInstance()->pushCommand(clientPackage);
     }
-
-    clientPackage->request =reinterpret_cast<char *>(buff);
-    cout << "Read: " << clientPackage->request << endl; // TODO remove
-    PackagesQueue::getInstance()->pushReceivedCommand(clientPackage);
+    catch (const ClientException& ex)
+    {
+        LOG(ERROR) << __func__ << " : " << ex.what();
+        delete clientPackage;
+    }
+    catch(const exception& ex)
+    {
+        LOG(ERROR) << __func__ << " : " << ex.what();
+    }
 }
 
 void TcpServer::onWrite(evutil_socket_t fd, short flags, void* arg)
 {
-    if(arg == nullptr)
-    {
-        cout << "arg is null" <<endl;
-        return;
-    }
+    ClientPackage* clientPackage = nullptr;
 
-    ClientPackage* clientPackage = (ClientPackage*)arg;
-    cout << "onWrite: " <<clientPackage->request << endl; // TODO remove
-    ssize_t bytes;
-    while(true)
+    try
     {
-        bytes = write(fd, clientPackage->request.c_str(), clientPackage->request.length());
-        if(bytes <= 0)
+        if(arg == nullptr)
+            throw runtime_error("arg is null");
+
+        clientPackage = (ClientPackage*)arg;
+        LOG(INFO) << "onWrite: " << clientPackage->getResponse();
+        ssize_t bytes;
+        while(true)
         {
-            if(errno == EINTR)
-                continue;
+            bytes = write(fd, clientPackage->getResponse().c_str(), clientPackage->getResponse().length());
+            if(bytes <= 0)
+            {
+                if(errno == EINTR)
+                    continue;
 
-            cout << "write() failed, errno = "<< errno << " closing connection." << endl;
-            delete clientPackage;
-            return;
+                throw ClientException("write() failed, errno = " + to_string(errno) + " closing connection.");
+            }
+
+            break;
         }
 
-        break;
+        clientPackage->deactivateWriteEvent();
     }
-
-    if(event_del(clientPackage->writeEvent.get()) < 0)
-       cout << "event_del() failed";
+    catch (const ClientException& ex)
+    {
+        LOG(ERROR) << __func__ << " : " << ex.what();
+        delete clientPackage;
+    }
+    catch(const exception& ex)
+    {
+        LOG(ERROR) << __func__ << " : " << ex.what();
+    }
 }

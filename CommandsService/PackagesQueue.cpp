@@ -9,8 +9,9 @@
 using namespace std;
 
 PackagesQueue* PackagesQueue::_instance = nullptr;
+std::once_flag PackagesQueue::_oneInstanceFlag;
 
-PackagesQueue*  PackagesQueue::getInstance()
+PackagesQueue* PackagesQueue::initInstance()
 {
     if(_instance == nullptr)
         _instance = new PackagesQueue();
@@ -18,42 +19,26 @@ PackagesQueue*  PackagesQueue::getInstance()
     return _instance;
 }
 
-PackagesQueue::PackagesQueue()
+PackagesQueue* PackagesQueue::getInstance()
 {
+    call_once(_oneInstanceFlag, &PackagesQueue::initInstance);
+    return _instance;
 }
 
-void PackagesQueue::pushReceivedCommand(ClientPackage * package)
+void PackagesQueue::pushCommand(ClientPackage * package)
 {
-    std::scoped_lock lock(_mutexWaiting);
-    _waitingQueue.push(package);
+    scoped_lock lock(_mutex);
+    _packagesQueue.push(package);
 }
 
-ClientPackage*  PackagesQueue::popReadyCommand()
+ClientPackage*  PackagesQueue::popCommand()
 {
-    std::scoped_lock lock(_mutexReady);
+    scoped_lock lock(_mutex);
 
-    if(_readyQueue.empty())
+    if(_packagesQueue.empty())
         return nullptr;
 
-    ClientPackage* pack = _readyQueue.front();
-    _readyQueue.pop();
-    return pack;
-}
-
-void PackagesQueue::pushReadyCommand(ClientPackage * package)
-{
-    std::scoped_lock lock(_mutexReady);
-    _readyQueue.push(package);
-}
-
-ClientPackage*  PackagesQueue::popReceivedCommand()
-{
-    std::scoped_lock lock(_mutexWaiting);
-
-    if(_waitingQueue.empty())
-        return nullptr;
-
-    ClientPackage* pack = _waitingQueue.front();
-    _waitingQueue.pop();
+    ClientPackage* pack = _packagesQueue.front();
+    _packagesQueue.pop();
     return pack;
 }

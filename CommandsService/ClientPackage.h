@@ -5,35 +5,39 @@
 #ifndef COMMANDSSERVICE_CLIENTPACKAGE_H
 #define COMMANDSSERVICE_CLIENTPACKAGE_H
 
-#include <event.h>
-#include <unistd.h>
+#include "Utils.h"
 
-using EventBasePtr = std::shared_ptr<event_base>;
-using EventPtr = std::shared_ptr<event>;
-
-struct ClientPackage
+class ClientPackage
 {
-    enum ProcessingStatus
-    {
-        RECEIVED = 0,
-        INPROGRES,
-        PROCESSED,
-        WAITING
-    };
+public:
+    ClientPackage(
+            evutil_socket_t fileDescriptor,
+            EventBasePtr base);
+    ~ClientPackage();
 
-    ClientPackage() : fileDescriptor(0) {}
-    ~ClientPackage()
-    {
-        close(fileDescriptor);
-    }
-    evutil_socket_t fileDescriptor;
-    EventBasePtr base;
-    EventPtr readEvent;
-    EventPtr writeEvent;
+    void activateReadEvent();
+    void activateWriteEvent();
+    void deactivateWriteEvent();
 
-    std::string request;
-    std::string response;
-    // TODO ProcessingStatus status;
+    std::string& getRequest();
+    void setRequest(const std::string& request);
+
+    std::string& getResponse();
+    void setResponse(const std::string& response);
+
+    void setReadEven(EventPtr readEvent);
+    void setWriteEven(EventPtr writeEvent);
+
+    EventBasePtr getBase();
+
+private:
+    evutil_socket_t _fileDescriptor;
+    EventBasePtr _base;
+    EventPtr _readEvent;
+    EventPtr _writeEvent;
+
+    std::string _request;
+    std::string _response;
 };
 
 #endif //COMMANDSSERVICE_CLIENTPACKAGE_H

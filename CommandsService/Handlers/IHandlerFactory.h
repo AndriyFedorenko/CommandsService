@@ -14,7 +14,9 @@ class IHandlerFactory
 public:
     using Ptr = std::shared_ptr<IHandlerFactory>;
 
-    virtual ICommandHandler::Ptr getHendler(const std::string& command) = 0;
+    IHandlerFactory() {}
+    virtual ~IHandlerFactory() {}
+    virtual ICommandHandler::Ptr getHandler(const std::string& command) = 0;
 };
 
 #endif //COMMANDSSERVICE_IHANDLERFACTORY_H

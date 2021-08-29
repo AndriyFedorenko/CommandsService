@@ -5,12 +5,16 @@
 #ifndef COMMANDSSERVICE_SERVERAPPLICATION_H
 #define COMMANDSSERVICE_SERVERAPPLICATION_H
 
+#include "TcpServer.h"
 
 class ServerApplication {
 public:
-    void run();
+    ServerApplication();
+    void run(int argc, char **argv);
 private:
-    void main();
+    void main(int argc, char **argv);
+
+    IServer::Ptr _server;
 };
 
 

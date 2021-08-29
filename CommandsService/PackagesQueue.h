@@ -9,32 +9,33 @@
 #include <queue>
 #include <thread>
 
-#include "IHandlerFactory.h"
+#include "Handlers/IHandlerFactory.h"
 #include "ClientPackage.h"
 
 class PackagesQueue
 {
 public:
-    PackagesQueue(const PackagesQueue&) = delete;
-    PackagesQueue& operator=(PackagesQueue&) = delete;
-
     static PackagesQueue* getInstance();
 
-    void pushReceivedCommand(ClientPackage * package);
-    ClientPackage*  popReceivedCommand();
+    void pushCommand(ClientPackage * package);
+    ClientPackage*  popCommand();
 
     void pushReadyCommand(ClientPackage * package);
     ClientPackage*  popReadyCommand();
 
 private:
-    PackagesQueue();
+    PackagesQueue()= default;
+    ~PackagesQueue()= default;
+    PackagesQueue(const PackagesQueue&) = delete;
+    PackagesQueue& operator=(PackagesQueue&) = delete;
+
+    static PackagesQueue* initInstance();
 
     static PackagesQueue* _instance;
+    static std::once_flag _oneInstanceFlag;
 
-    std::mutex _mutexWaiting;
-    std::mutex _mutexReady;
-    std::queue<ClientPackage*> _waitingQueue;
-    std::queue<ClientPackage*> _readyQueue;
+    std::mutex _mutex;
+    std::queue<ClientPackage*> _packagesQueue;
 };
 
 
