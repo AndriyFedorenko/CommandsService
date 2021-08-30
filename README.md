@@ -2,7 +2,7 @@
 
 ### Requirements
 
-===================================================================================================
+
 Implement a service (using C++) to accept commands, execute them and return the results. The transport for the communication between the client and server can be TCP or UDP. The client can send multiple commands using the same channel. The service should be able to serve 100's of simultaneous clients. Libevent or epoll usage is assumed. Also any C++ standard library usage compared to boost is preferred. 
 
 The service should be able to run independently. Any 3rd party dependencies should be clearly specified as dependencies in the accompanying README. Please commit your solution into github and provide us with the link to the repository. Please include a README.md which describes the commands and include examples on how to build and run the service. Please also include sample runs with input and the output produced by the service.
@@ -55,7 +55,7 @@ S <sum of arg1 + arg2 + arg3>
 
 $ sum 2 b d g
 E Invalid argument
-===================================================================================================
+
 
 ### Manual Tesing Results
 ![ManualTesing](https://user-images.githubusercontent.com/10127885/131414656-6dc55938-c172-4f69-a5ae-f454684eeb63.JPG)
