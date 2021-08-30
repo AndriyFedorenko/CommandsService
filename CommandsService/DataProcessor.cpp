@@ -3,6 +3,7 @@
 //
 
 #include <thread>
+#include <chrono>
 
 #include <glog/logging.h>
 
@@ -11,6 +12,11 @@
 #include "Utils.h"
 
 using namespace std;
+
+namespace
+{
+    const int WAIT_NEW_MESS_MILLISEC = 10;
+}
 
 DataProcessor::DataProcessor(IHandlerFactory::Ptr handlerFactory, const int numOfThreads) :
 _handlerFactory(handlerFactory),
@@ -53,6 +59,10 @@ void DataProcessor::createThreadProcessor() const
                             {
                                 LOG(ERROR) << ex.what();
                             }
+                        }
+                        else
+                        {
+                            this_thread::sleep_for(chrono::milliseconds(WAIT_NEW_MESS_MILLISEC));
                         }
                     }
                 });

@@ -28,6 +28,7 @@ TcpServer::TcpServer(
 TcpServer::~TcpServer()
 {
     close(_serverConnection.fileDescriptor);
+    event_base_loopexit(_serverConnection.base.get(), NULL);
 }
 
 namespace {

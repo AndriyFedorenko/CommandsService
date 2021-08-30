@@ -6,6 +6,7 @@
 #include "PingHandler.h"
 #include "UnsupportedCommandHandler.h"
 #include "SumHandler.h"
+#include "CatHandler.h"
 
 using namespace std;
 
@@ -26,7 +27,7 @@ ICommandHandler::Ptr CommandsHandlerFactory::getHandler(const string& command)
     }
     else if(command== SupportedCommands::CAT)
     {
-        return std::make_shared<PingHandler>();
+        return std::make_shared<CatHandler>();
     }
     else if(command == SupportedCommands::SUM)
     {

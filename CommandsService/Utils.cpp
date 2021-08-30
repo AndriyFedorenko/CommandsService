@@ -29,6 +29,7 @@ void Utils::buildResponse(const char status, const string& data, string& respons
     response = status;
     response += " ";
     response += data;
+    response += "\n";
 }
 
 EventBasePtr Utils::makeEventBase()

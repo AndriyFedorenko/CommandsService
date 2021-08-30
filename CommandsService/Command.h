@@ -8,6 +8,10 @@
 #include <string>
 #include <list>
 
+/**
+ * @brief Structure is using for storing parsed commands
+ */
+
 struct Command
 {
     std::string command;

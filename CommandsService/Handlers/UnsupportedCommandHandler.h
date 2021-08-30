@@ -7,9 +7,20 @@
 
 #include "ICommandHandler.h"
 
+/**
+ * @class UnsupportedCommandHandler
+ * @brief Class is using to handle all commands which is not supporting.
+ */
+
 class UnsupportedCommandHandler : public ICommandHandler
 {
 public:
+
+    /**
+     * @brief Returns error message as response
+     * @param command
+     * @param result  output parameter
+     */
     void handle(const Command& command, std::string& result) override;
 };
 

@@ -9,9 +9,19 @@
 
 #include "IHandlerFactory.h"
 
+/**
+ * @class CommandsHandlerFactory
+ * @brief Class is implementing commands handler factory. This factory is creating command handlers.
+ */
+
 class CommandsHandlerFactory : public IHandlerFactory
 {
 public:
+    /**
+     * @brief This method creates command handlers for each supported commands.
+     * @param command: it is just command without arguments
+     * @return
+     */
     ICommandHandler::Ptr getHandler(const std::string& command) override;
 
 private:

@@ -9,6 +9,11 @@
 #include <string>
 #include "ICommandHandler.h"
 
+/**
+ * @class IHandlerFactory
+ * @brief This class is implementing handler factory interface.
+ */
+
 class IHandlerFactory
 {
 public:

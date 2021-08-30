@@ -7,6 +7,11 @@
 
 #include <exception>
 
+/**
+ * @class ClientException
+ * @brief Custom exception for handling client disconnect event
+ */
+
 class ClientException : public std::exception
 {
     std::string _message;

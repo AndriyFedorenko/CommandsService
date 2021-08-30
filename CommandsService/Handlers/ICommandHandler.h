@@ -10,6 +10,12 @@
 
 #include "../Command.h"
 
+/**
+ * @class ICommandHandler
+ * @brief This class is implementing command handler interface.
+ */
+
+
 class ICommandHandler
 {
 public:

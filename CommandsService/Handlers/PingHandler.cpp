@@ -3,17 +3,24 @@
 //
 
 #include "PingHandler.h"
+#include "../Utils.h"
 
 using namespace std;
 
 namespace
 {
     const string DEFAULT_RESPONSE = "pong";
+    const string ERROR = "Unable to process your request";
 }
-
 
 void PingHandler::handle(const Command& command, std::string& result)
 {
-    // TODO validate command
-    result = DEFAULT_RESPONSE;
+    if(command.arguments.empty())
+    {
+        Utils::buildResponse(static_cast<char>(CommandStatus::SUCCESSFUL), DEFAULT_RESPONSE, result);
+    }
+    else
+    {
+        Utils::buildResponse(static_cast<char>(CommandStatus::UNSUCCESSFUL), ERROR, result);
+    }
 }
