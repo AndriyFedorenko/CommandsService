@@ -7,6 +7,9 @@
 
 #include "ClientPackage.h"
 
+/**
+ * @brief This structure contains information about server connection needed for libevent
+ */
 struct ServerConnection
 {
     evutil_socket_t fileDescriptor;

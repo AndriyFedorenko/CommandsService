@@ -7,6 +7,13 @@
 
 #include <memory>
 
+/**
+ * @class IServer
+ * @brief This class is implementing server interface. It is providing additional flexibility.
+ * For instance we can add support for UDP protocol.
+ *
+ */
+
 class IServer
 {
 public:

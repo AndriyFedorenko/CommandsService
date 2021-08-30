@@ -151,7 +151,7 @@ void TcpServer::onRead(evutil_socket_t fileDescriptor, short flags, void* arg)
     }
 }
 
-void TcpServer::onWrite(evutil_socket_t fd, short flags, void* arg)
+void TcpServer::onWrite(evutil_socket_t fileDescriptor, short flags, void* arg)
 {
     ClientPackage* clientPackage = nullptr;
 
@@ -165,7 +165,7 @@ void TcpServer::onWrite(evutil_socket_t fd, short flags, void* arg)
         ssize_t bytes;
         while(true)
         {
-            bytes = write(fd, clientPackage->getResponse().c_str(), clientPackage->getResponse().length());
+            bytes = write(fileDescriptor, clientPackage->getResponse().c_str(), clientPackage->getResponse().length());
             if(bytes <= 0)
             {
                 if(errno == EINTR)

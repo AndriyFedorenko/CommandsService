@@ -7,6 +7,11 @@
 
 #include <memory>
 
+/**
+ * @class IDataProcessor
+ * @brief This class is implementing interface for data processor.
+ */
+
 class IDataProcessor
 {
 public:
