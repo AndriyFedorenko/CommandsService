@@ -61,6 +61,22 @@ These classes are implementing handlers for clients commands.
 
 ![CommandsHandlers](https://user-images.githubusercontent.com/10127885/131491130-761dd350-e5c5-4a35-a997-b4b2c9c1931c.JPG)
 
+## How to run services
+
+CommandsService [ip address] [port] [Number of threads]
+
+For instance:
+`./CommandsService 127.0.0.1 8222 4`
+
+![HowToRun](https://user-images.githubusercontent.com/10127885/131518518-78bee5b0-9602-42e1-85cb-728b99b52899.JPG)
+
+#### Log file 
+
+glog writes to the filename `/tmp/\<program name\>.\<hostname\>.\<user name\>.log.\<severity level\>.\<date\>.\`
+
+![HowToCheckLog](https://user-images.githubusercontent.com/10127885/131518545-7121c2da-66d9-4e5c-acd7-b0c495edfa59.JPG)
+
+
 ## Manual Tesing Results
 ![ManualTesing](https://user-images.githubusercontent.com/10127885/131414656-6dc55938-c172-4f69-a5ae-f454684eeb63.JPG)
 
