@@ -1,7 +1,43 @@
 # Commands Service
 
-### Requirements
+The Commands Service acceptes commands, executes them and returns the results. The transport for the communication between the client and server is TCP.
 
+## Non Functional requirements
+
+- C++17
+- Cmake
+- Clion
+- Ubuntu
+
+## 3rd Party Dependencies
+
+#### - Libevent  (https://libevent.org/)
+		sudo apt update
+		sudo apt install libevent-dev
+
+#### - Google Logging Library (https://github.com/google/glog)
+
+#####Building glog with CMake
+1. Get the source code and change to it. e.g., cloning with git:
+`git clone https://github.com/google/glog.git`
+`cd glog`
+2. Run CMake to configure the build tree.
+`cmake -S . -B build -G "Unix Makefiles"`
+3. Afterwards, generated files can be used to compile the project.
+`cmake --build build`
+4. Test the build software (optional).
+`cmake --build build --target test`
+5. Install the built files (optional).
+`cmake --build build --target install`
+
+
+## Designage
+
+
+## Manual Tesing Results
+![ManualTesing](https://user-images.githubusercontent.com/10127885/131414656-6dc55938-c172-4f69-a5ae-f454684eeb63.JPG)
+
+## Requirements
 
 Implement a service (using C++) to accept commands, execute them and return the results. The transport for the communication between the client and server can be TCP or UDP. The client can send multiple commands using the same channel. The service should be able to serve 100's of simultaneous clients. Libevent or epoll usage is assumed. Also any C++ standard library usage compared to boost is preferred. 
 
@@ -55,8 +91,3 @@ S <sum of arg1 + arg2 + arg3>
 
 $ sum 2 b d g
 E Invalid argument
-
-
-### Manual Tesing Results
-![ManualTesing](https://user-images.githubusercontent.com/10127885/131414656-6dc55938-c172-4f69-a5ae-f454684eeb63.JPG)
-
