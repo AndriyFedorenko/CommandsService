@@ -33,7 +33,7 @@ The Commands Service acceptes commands, executes them and returns the results. T
 
 ## Design
 
-#### Brief description
+### Brief description
 
 The server receives commands from clients and puts them into a global (thread-safe) queue. Data processor starts N (configurable) threads which are getting commands from the queue and processing them simultaneously.  When data processing is finished, the client writes event is activating and the server sends a response to the client.
 
