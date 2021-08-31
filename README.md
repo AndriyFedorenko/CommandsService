@@ -41,6 +41,10 @@ The server receives commands from clients and puts them into a global (thread-sa
 
 ![sd1](https://user-images.githubusercontent.com/10127885/131478811-2d5a3c72-e090-481c-8296-33e867f7dfa6.JPG)
 
+### Class diagrams
+
+![TcpServer](https://user-images.githubusercontent.com/10127885/131485911-1045ace6-2eab-4477-9cd1-9a32f20bf413.JPG)
+
 ## Manual Tesing Results
 ![ManualTesing](https://user-images.githubusercontent.com/10127885/131414656-6dc55938-c172-4f69-a5ae-f454684eeb63.JPG)
 
