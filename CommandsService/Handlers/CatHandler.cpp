@@ -2,6 +2,7 @@
 // Created by andrii on 29.08.21.
 //
 
+
 #include "CatHandler.h"
 #include "../Utils.h"
 
@@ -29,3 +30,4 @@ void CatHandler::handle(const Command& command, std::string& result)
 
     Utils::buildResponse(static_cast<char>(status), data, result);
 }
+

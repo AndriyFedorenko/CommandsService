@@ -8,6 +8,7 @@
 #include "ICommandHandler.h"
 #include "DataReaders/IDataReader.h"
 
+
 /**
  * @class CatHandler
  * @brief Class handles cat command.
@@ -17,6 +18,7 @@ class CatHandler : public ICommandHandler
 {
 public:
     CatHandler(IDataReader::Ptr fileReader);
+
 
     /**
      * @brief If file exists then returns file contents if not return error.
