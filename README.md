@@ -31,7 +31,7 @@ The Commands Service acceptes commands, executes them and returns the results. T
 `cmake --build build --target install`
 
 
-## Designage
+## Design
 
 
 ## Manual Tesing Results
