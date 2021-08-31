@@ -30,6 +30,11 @@ The Commands Service acceptes commands, executes them and returns the results. T
 5. Install the built files (optional).
 `cmake --build build --target install`
 
+#### - GoogleTest (https://github.com/google/googletest)
+
+1. Clone main project `git clone https://github.com/AndriyFedorenko/CommandsService.git`
+2. Go to TestsCommandsService folder `cd CommandsService/TestsCommandsService/`
+3. Clone GoogleTest `git clone https://github.com/google/googletest.git ./lib`
 
 ## Design
 
