@@ -17,7 +17,7 @@ The Commands Service acceptes commands, executes them and returns the results. T
 
 #### - Google Logging Library (https://github.com/google/glog)
 
-#####Building glog with CMake
+##### Building glog with CMake
 1. Get the source code and change to it. e.g., cloning with git:
 `git clone https://github.com/google/glog.git`
 `cd glog`
