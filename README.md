@@ -55,7 +55,9 @@ This class is processing commands simultaneously. It is using HandlerFactory to 
 
 ![DataProcesoor](https://user-images.githubusercontent.com/10127885/131489648-25746008-181b-41cd-93cf-25a32df8bb4c.JPG)
 
-### Handlers
+#### Handlers
+
+These classes are implementing handlers for clients commands.
 
 ![CommandsHandlers](https://user-images.githubusercontent.com/10127885/131491130-761dd350-e5c5-4a35-a997-b4b2c9c1931c.JPG)
 
