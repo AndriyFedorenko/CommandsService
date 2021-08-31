@@ -51,7 +51,13 @@ This class is implementing TCP server.This class is wrapping up libevent functio
 
 #### DataProcessor
 
+This class is processing commands simultaneously. It is using HandlerFactory to handle different commands.
+
 ![DataProcesoor](https://user-images.githubusercontent.com/10127885/131489648-25746008-181b-41cd-93cf-25a32df8bb4c.JPG)
+
+### Handlers
+
+
 
 ## Manual Tesing Results
 ![ManualTesing](https://user-images.githubusercontent.com/10127885/131414656-6dc55938-c172-4f69-a5ae-f454684eeb63.JPG)
