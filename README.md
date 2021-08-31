@@ -57,7 +57,7 @@ This class is processing commands simultaneously. It is using HandlerFactory to 
 
 ### Handlers
 
-
+![CommandsHandlers](https://user-images.githubusercontent.com/10127885/131491130-761dd350-e5c5-4a35-a997-b4b2c9c1931c.JPG)
 
 ## Manual Tesing Results
 ![ManualTesing](https://user-images.githubusercontent.com/10127885/131414656-6dc55938-c172-4f69-a5ae-f454684eeb63.JPG)
