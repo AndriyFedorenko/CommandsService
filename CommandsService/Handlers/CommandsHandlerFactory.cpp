@@ -7,6 +7,7 @@
 #include "UnsupportedCommandHandler.h"
 #include "SumHandler.h"
 #include "CatHandler.h"
+#include "DataReaders/DataReader.h"
 
 using namespace std;
 
@@ -23,18 +24,18 @@ ICommandHandler::Ptr CommandsHandlerFactory::getHandler(const string& command)
 
     if(command == SupportedCommands::PING)
     {
-        return std::make_shared<PingHandler>();
+        return make_shared<PingHandler>();
     }
     else if(command== SupportedCommands::CAT)
     {
-        return std::make_shared<CatHandler>();
+        return make_shared<CatHandler>(make_shared<DataReader>());
     }
     else if(command == SupportedCommands::SUM)
     {
-        return std::make_shared<SumHandler>();
+        return make_shared<SumHandler>();
     }
     else
     {
-        return std::make_shared<UnsupportedCommandHandler>();
+        return make_shared<UnsupportedCommandHandler>();
     }
 }
