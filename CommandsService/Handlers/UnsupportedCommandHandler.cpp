@@ -10,5 +10,5 @@ void UnsupportedCommandHandler::handle(const Command& command, std::string& resu
 {
     result = static_cast<char>(CommandStatus::UNSUCCESSFUL);
     result += " ";
-    result += "This command is not supported.";
+    result += "This command is not supported.\n";
 }
