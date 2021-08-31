@@ -43,7 +43,13 @@ The server receives commands from clients and puts them into a global (thread-sa
 
 ### Class diagrams
 
+#### TcpServer
+
+This class is implementing TCP server.This class is wrapping up libevent functions and implementing asynchronous socket. TCP server is receiving requests, processing requests by DataProcessor and sending responses to clients. The **TcpServer** aggregates **DataProcessor** for processing received commands.
+
 ![TcpServer](https://user-images.githubusercontent.com/10127885/131485911-1045ace6-2eab-4477-9cd1-9a32f20bf413.JPG)
+
+#### DataProcessor
 
 ## Manual Tesing Results
 ![ManualTesing](https://user-images.githubusercontent.com/10127885/131414656-6dc55938-c172-4f69-a5ae-f454684eeb63.JPG)
